@@ -58,7 +58,7 @@ class Epd2in13v2(Observer):
         Plot.y_axis_labels(prices, FONT_SMALL, (0, 0), (38, 89), draw=screen_draw)
         screen_draw.line([(10, 98), (240, 98)])
         screen_draw.line([(39, 4), (39, 94)])
-        screen_draw.line([(60, 102), (60, 119)])
+        #screen_draw.line([(60, 102), (60, 119)])
         Plot.caption(prices[len(prices) -1], last_element, change, 100, SCREEN_WIDTH, FONT_MEDIUM, screen_draw)
         #Plot.caption(flatten_prices[len(flatten_prices) - 1], 95, SCREEN_WIDTH, FONT_LARGE, screen_draw)
 
