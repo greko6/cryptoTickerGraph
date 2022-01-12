@@ -18,10 +18,18 @@ from presentation.observer import Observable
 
 DATA_SLICE_DAYS = 1
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M"
-CRYPTO = ['BTC','ETH','SOL','DOT','OMI','BAN','MOON']
+#CRYPTO = ['BTC','ETH','SOL','DOT','OMI','BAN','MOON']
+CRYPTO = ['BTC','ETH','SOL']
 
 def get_dummy_data():
     logger.info('Generating dummy data')
+
+def get_percentage_diff(previous, current):
+    try:
+        percentage = abs(previous - current)/max(previous, current) * 100
+    except ZeroDivisionError:
+        percentage = float('inf')
+    return percentage
 
 def fetch_prices(token):
     try:
@@ -48,9 +56,9 @@ def fetch_prices(token):
             print("Unknown Token, please add to if statement")
             exit()
         geckourlhistorical = "https://api.coingecko.com/api/v3/coins/"+str(tokenname)+"/market_chart/range?vs_currency=usd&from="+str(starttimeseconds)+"&to="+str(endtimeseconds)
-#       logger.info(geckourlhistorical)
+        #logger.info(geckourlhistorical)
         rawtimeseries = requests.get(geckourlhistorical).json()
-#       logger.info(str(rawtimeseries))
+        # logger.info(str(rawtimeseries))
         timeseriesarray = rawtimeseries['prices']
         prices = []
         length=len (timeseriesarray)
@@ -59,20 +67,25 @@ def fetch_prices(token):
             prices.append(timeseriesarray[i][1])
             i+=1
         # Get 24H Change
-        geckourl24h = "https://api.coingecko.com/api/v3/simple/price?ids=" +str(tokenname)+"&vs_currencies=usd&include_24hr_change=true"
-#       logger.info(geckourl24h)
-        raw24h = requests.get(geckourl24h).json()
-        actual24h = raw24h[str(tokenname)]['usd_24h_change']
-        liveprice = raw24h[str(tokenname)]['usd']
+        #geckourl24h = "https://api.coingecko.com/api/v3/simple/price?ids=" +str(tokenname)+"&vs_currencies=usd&include_24hr_change=true"
+        #logger.info(geckourl24h)
+        #raw24h = requests.get(geckourl24h).json()
+        #actual24h = raw24h[str(tokenname)]['usd_24h_change']
+        #liveprice = raw24h[str(tokenname)]['usd']
+        liveprice = prices[-1:][0]
+        actual24h = get_percentage_diff(prices[0], liveprice)
 
         # Add values to list
         prices.append(liveprice)
         prices.append(actual24h)
         prices.append(token)
         return prices
-    except:
+    except Exception as e:
         logger.info("Unexpected error")
+        logger.info(e)
+        time.sleep(5)
         return ("null")
+
 def main():
     logger.info('Initialize')
 
@@ -85,15 +98,20 @@ def main():
             try:
                 prices = fetch_prices(coin)
                 if prices != "null":
-                    data_sink.update_observers(prices)
+#                    logger.info(prices)
+                    new_prices = [x for x in prices]
+                    data_sink.update_observers(new_prices)
                     time.sleep(30)
             except (HTTPError, URLError) as e:
                 logger.info(str(e))
+                time.sleep(5)
+            except Exception as e:
+                logger.info(e)
                 time.sleep(5)
             except KeyboardInterrupt:
                 logger.info('Exit')
                 data_sink.close()
                 exit()
-
+            
 if __name__ == "__main__":
     main()

@@ -26,7 +26,7 @@ class Picture(Observer):
         if self.mode == "candle":
             Plot.candle(prices, size=(SCREEN_WIDTH - 45, 93), position=(41, 0), draw=screen_draw)
         else:
-            last_prices = [x[3] for x in prices]
+            last_prices = [x for x in prices]
             Plot.line(last_prices, size=(SCREEN_WIDTH - 42, 93), position=(42, 0), draw=screen_draw)
 
         flatten_prices = [item for sublist in prices for item in sublist]

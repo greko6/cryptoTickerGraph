@@ -5,7 +5,6 @@ from config.config import config
 
 __all__ = ('logger', )
 
-
 def get_logger():
     formatter = logging.Formatter(
         fmt='%(asctime)s %(levelname)-8s %(message)s',

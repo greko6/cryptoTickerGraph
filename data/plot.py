@@ -7,9 +7,9 @@ class Plot:
     @staticmethod
     def line(prices, size=(100, 100), position=(0, 0), draw=None, fill=None):
         assert draw
-        max_price = max(prices)
-        min_price = min(prices)
-        normalised_prices = [(price - min_price) / (max_price - min_price) for price in prices]
+        max_price = max(prices[:-2])
+        min_price = min(prices[:-2])
+        normalised_prices = [(price - min_price) / (max_price - min_price) for price in prices[:-2]]
         plot_data = []
         for i, element in enumerate(normalised_prices):
             x = i * (size[0] / len(normalised_prices)) + position[0]
@@ -27,8 +27,8 @@ class Plot:
             else:
                 return position_first[0]
 
-        max_price = max(prices)
-        min_price = min(prices)
+        max_price = max(prices[:-2])
+        min_price = min(prices[:-2])
         middle_price = (max_price - min_price) / 2 + min_price
 
         price = "%d" % max_price
@@ -50,7 +50,7 @@ class Plot:
         elif coin == "BAN":
             formatting = "%.4f"
         else:
-            formatting = "%.2f"
+            formatting = "%.0f"
         #price_text = coin + ": $" + formatting % price
         #price_text = "$" + formatting % price
         price_text = coin + "  $" + formatting % price + "  " + "%.2f" % change

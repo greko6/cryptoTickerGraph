@@ -11,6 +11,8 @@ SCREEN_WIDTH = epd2in13_V2.EPD_HEIGHT  # 250
 
 FONT_SMALL = ImageFont.truetype(
     os.path.join(os.path.dirname(__file__), os.pardir, 'Roses.ttf'), 8)
+FONT_MEDIUM = ImageFont.truetype(
+    os.path.join(os.path.dirname(__file__), os.pardir, 'PixelSplitter-Bold.ttf'), 20)
 FONT_LARGE = ImageFont.truetype(
     os.path.join(os.path.dirname(__file__), os.pardir, 'PixelSplitter-Bold.ttf'), 26)
 
@@ -36,17 +38,29 @@ class Epd2in13v2(Observer):
         screen_draw.rectangle((0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), fill="#ffffff")
         screen_draw = self.screen_draw
         if self.mode == "candle":
+            array_length = len(prices)
+            last_element = prices[array_length - 1]
+            del prices[-1]
+            array_length = len(prices)
+            change = prices[array_length - 1]
+            del prices[-1]
             Plot.candle(prices, size=(SCREEN_WIDTH - 45, 93), position=(41, 0), draw=screen_draw)
         else:
-            last_prices = [x[3] for x in prices]
-            Plot.line(last_prices, size=(SCREEN_WIDTH - 42, 93), position=(42, 0), draw=screen_draw)
+            array_length = len(prices)
+            last_element = prices[array_length - 1]
+            del prices[-1]
+            array_length = len(prices)
+            change = prices[array_length - 1]
+            del prices[-1]
+            Plot.line(prices, size=(SCREEN_WIDTH - 36, 79), position=(36, 0), draw=screen_draw)
 
-        flatten_prices = [item for sublist in prices for item in sublist]
-        Plot.y_axis_labels(flatten_prices, FONT_SMALL, (0, 0), (38, 89), draw=screen_draw)
+#        Plot.y_axis_labels(prices, FONT_SMALL, (0, 0), (32, 76), draw=screen_draw)
+        Plot.y_axis_labels(prices, FONT_SMALL, (0, 0), (38, 89), draw=screen_draw)
         screen_draw.line([(10, 98), (240, 98)])
         screen_draw.line([(39, 4), (39, 94)])
         screen_draw.line([(60, 102), (60, 119)])
-        Plot.caption(flatten_prices[len(flatten_prices) - 1], 95, SCREEN_WIDTH, FONT_LARGE, screen_draw)
+        Plot.caption(prices[len(prices) -1], last_element, change, 100, SCREEN_WIDTH, FONT_MEDIUM, screen_draw)
+        #Plot.caption(flatten_prices[len(flatten_prices) - 1], 95, SCREEN_WIDTH, FONT_LARGE, screen_draw)
 
     def update(self, data):
         self.form_image(data, self.screen_draw)
