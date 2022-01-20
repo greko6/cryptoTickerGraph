@@ -32,6 +32,10 @@ class Config:
     def refresh_interval(self):
         return self._conf.getint('base', 'refresh_interval_minutes', fallback=15) * 60
 
+    @property
+    def graph_type(self):
+        return self._conf.get('base', 'graph_type', fallback="candle")
+
     @staticmethod
     def _load_screens(file_name):
         conf = configparser.ConfigParser()

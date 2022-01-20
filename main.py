@@ -31,7 +31,7 @@ def get_percentage_diff(previous, current):
         percentage = float('inf')
     return percentage
 
-def fetch_prices(token):
+def fetch_prices(token, graph_type):
     try:
         days_ago = DATA_SLICE_DAYS
         endtime = int(time.time())
@@ -55,30 +55,33 @@ def fetch_prices(token):
         else:
             print("Unknown Token, please add to if statement")
             exit()
-        geckourlhistorical = "https://api.coingecko.com/api/v3/coins/"+str(tokenname)+"/market_chart/range?vs_currency=usd&from="+str(starttimeseconds)+"&to="+str(endtimeseconds)
-        #logger.info(geckourlhistorical)
+        if graph_type == "line":
+            geckourlhistorical = "https://api.coingecko.com/api/v3/coins/"+str(tokenname)+"/market_chart/range?vs_currency=usd&from="+str(starttimeseconds)+"&to="+str(endtimeseconds)
+        if graph_type == "candle" or graph_type == "renko":
+            geckourlhistorical = "https://api.coingecko.com/api/v3/coins/"+str(tokenname)+"/ohlc?days=1&vs_currency=usd"
+        logger.info(geckourlhistorical)
         rawtimeseries = requests.get(geckourlhistorical).json()
-        # logger.info(str(rawtimeseries))
-        timeseriesarray = rawtimeseries['prices']
-        prices = []
-        length=len (timeseriesarray)
-        i=0
-        while i < length:
-            prices.append(timeseriesarray[i][1])
-            i+=1
-        # Get 24H Change
-        #geckourl24h = "https://api.coingecko.com/api/v3/simple/price?ids=" +str(tokenname)+"&vs_currencies=usd&include_24hr_change=true"
-        #logger.info(geckourl24h)
-        #raw24h = requests.get(geckourl24h).json()
-        #actual24h = raw24h[str(tokenname)]['usd_24h_change']
-        #liveprice = raw24h[str(tokenname)]['usd']
-        liveprice = prices[-1:][0]
-        actual24h = get_percentage_diff(prices[0], liveprice)
+
+        if graph_type == "line":
+            timeseriesarray = rawtimeseries['prices']
+            prices = []
+            length=len(timeseriesarray)
+            i=0
+            while i < length:
+                prices.append(timeseriesarray[i][1])
+                i+=1    
+            liveprice = prices[-1:][0] 
+            actual24h = get_percentage_diff(prices[0], liveprice)
+        elif graph_type == "candle" or graph_type == "renko":
+            prices = [entry[1:] for entry in rawtimeseries] # removing timestamp, we don't need it
+            liveprice = prices[-1][3]
+            actual24h = get_percentage_diff(prices[0][3], liveprice)
 
         # Add values to list
         prices.append(liveprice)
         prices.append(actual24h)
         prices.append(token)
+
         return prices
     except Exception as e:
         logger.info("Unexpected error")
@@ -96,11 +99,11 @@ def main():
     while True:
         for coin in itertools.cycle(CRYPTO):
             try:
-                prices = fetch_prices(coin)
-                if prices != "null":
-#                    logger.info(prices)
+                prices = fetch_prices(coin, config.graph_type)
+                if prices != "null": 
                     new_prices = [x for x in prices]
                     data_sink.update_observers(new_prices)
+                    exit()
                     time.sleep(30)
             except (HTTPError, URLError) as e:
                 logger.info(str(e))

@@ -20,6 +20,7 @@ class Builder:
                     screen_config_value = parameters.get(argument)
                     if screen_config_value is not None:
                         kwargs[argument] = screen_config_value
+                kwargs['mode'] = self.config.graph_type
                 screen_class(observable=observable, **kwargs)
                 logger.info(f'{screen} initialized')
             except AttributeError as e:

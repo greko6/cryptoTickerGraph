@@ -1,0 +1,5 @@
+numpy
+dateparser
+Pillow
+RPi.GPIO 
+spidev

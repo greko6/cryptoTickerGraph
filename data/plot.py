@@ -2,7 +2,6 @@ import math
 import time
 from datetime import datetime
 
-
 class Plot:
     @staticmethod
     def line(prices, size=(100, 100), position=(0, 0), draw=None, fill=None):
@@ -51,8 +50,6 @@ class Plot:
             formatting = "%.4f"
         else:
             formatting = "%.0f"
-        #price_text = coin + ": $" + formatting % price
-        #price_text = "$" + formatting % price
         price_text = coin + "  $" + formatting % price + "  " + "%.2f" % change
         price_text += "%"
         text_width, _ = draw.textsize(price_text, font)
@@ -72,13 +69,19 @@ class Plot:
         leftover_space = width % (candle_width + space)
         windows_per_candle = len(data) // num_of_candles
         data_offset = len(data) % num_of_candles
+        print(data_offset)
         candle_data = []
         for i in range(data_offset, len(data), windows_per_candle):
             window = data[i:i + windows_per_candle - 1]
+            print(window)
             open = window[0][0]
-            close = window[len(window) - 1][3]
-            high = max([i[1] for i in window])
-            low = min([i[2] for i in window])
+            high = max(window[0])
+            low = min(window[0])
+            close = window[0][3]
+
+            # close = window[len(window) - 1][3]
+            # high = max([i[1] for i in window])
+            # low = min([i[2] for i in window])
             candle_data.append((open, high, low, close))
 
         all_values = [item for sublist in candle_data for item in sublist]
