@@ -64,7 +64,7 @@ class Epd2in13v2(Observer):
 
     def update(self, data):
         self.form_image(data, self.screen_draw)
-        screen_image_rotated = self.screen_image.rotate(180)
+        screen_image_rotated = self.screen_image.rotate(0)
         # TODO: add a way to switch bewen partial and full update
         # epd.presentation(epd.getbuffer(screen_image_rotated))
         self.epd.displayPartial(self.epd.getbuffer(screen_image_rotated))

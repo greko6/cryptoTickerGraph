@@ -103,7 +103,6 @@ def main():
                 if prices != "null": 
                     new_prices = [x for x in prices]
                     data_sink.update_observers(new_prices)
-                    exit()
                     time.sleep(30)
             except (HTTPError, URLError) as e:
                 logger.info(str(e))
