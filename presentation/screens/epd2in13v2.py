@@ -2,6 +2,7 @@ import os
 
 from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd2in13_V2
+from datetime import datetime
 
 from data.plot import Plot
 from presentation.observer import Observer
@@ -11,6 +12,8 @@ SCREEN_WIDTH = epd2in13_V2.EPD_HEIGHT  # 250
 
 FONT_SMALL = ImageFont.truetype(
     os.path.join(os.path.dirname(__file__), os.pardir, 'Roses.ttf'), 8)
+FONT_SMALL_MEDIUM = ImageFont.truetype(
+    os.path.join(os.path.dirname(__file__), os.pardir, 'PixelSplitter-Bold.ttf'), 15)
 FONT_MEDIUM = ImageFont.truetype(
     os.path.join(os.path.dirname(__file__), os.pardir, 'PixelSplitter-Bold.ttf'), 20)
 FONT_LARGE = ImageFont.truetype(
@@ -60,6 +63,10 @@ class Epd2in13v2(Observer):
         screen_draw.line([(39, 4), (39, 94)])
         #screen_draw.line([(60, 102), (60, 119)])
         Plot.caption(prices[len(prices) -1], last_element, change, 100, SCREEN_WIDTH, FONT_MEDIUM, screen_draw)
+
+        now = datetime.now()
+        current_time = now.strftime("%H : %M")
+        Plot.text(current_time, 45, 80, SCREEN_WIDTH, FONT_SMALL_MEDIUM, screen_draw)
         #Plot.caption(flatten_prices[len(flatten_prices) - 1], 95, SCREEN_WIDTH, FONT_LARGE, screen_draw)
 
     def update(self, data):
