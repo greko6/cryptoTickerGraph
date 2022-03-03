@@ -58,6 +58,12 @@ class Plot:
         draw.text(price_position, price_text, font=font)
 
     @staticmethod
+    def text(text, x, y, screen_width, font, draw):
+        text_width, _ = draw.textsize(text, font)
+        text_position = (x, y)
+        draw.text(text_position, text, font=font)
+
+    @staticmethod
     def candle(data, size=(100, 100), position=(0, 0), draw=None):
         width = size[0]
         height = size[1]
