@@ -19,7 +19,8 @@ from presentation.observer import Observable
 DATA_SLICE_DAYS = 1
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M"
 #CRYPTO = ['BTC','ETH','SOL','DOT','OMI','BAN','MOON']
-CRYPTO = ['BTC','ETH','SOL']
+#CRYPTO = ['BTC','ETH','SOL']
+CRYPTO = ['BTC']
 
 def get_dummy_data():
     logger.info('Generating dummy data')
@@ -60,7 +61,7 @@ def fetch_prices(token, graph_type):
         if graph_type == "candle" or graph_type == "renko":
             geckourlhistorical = "https://api.coingecko.com/api/v3/coins/"+str(tokenname)+"/ohlc?days=1&vs_currency=usd"
         logger.info(geckourlhistorical)
-        rawtimeseries = requests.get(geckourlhistorical).json()
+        rawtimeseries = requests.get(geckourlhistorical, timeout=10).json()
 
         if graph_type == "line":
             timeseriesarray = rawtimeseries['prices']
@@ -103,7 +104,7 @@ def main():
                 if prices != "null": 
                     new_prices = [x for x in prices]
                     data_sink.update_observers(new_prices)
-                    time.sleep(30)
+                    time.sleep(600)
             except (HTTPError, URLError) as e:
                 logger.info(str(e))
                 time.sleep(5)

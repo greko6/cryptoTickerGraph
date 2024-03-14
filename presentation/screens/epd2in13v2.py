@@ -3,6 +3,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd2in13_V2
 from datetime import datetime
+import time
 
 from data.plot import Plot
 from presentation.observer import Observer
@@ -40,6 +41,7 @@ class Epd2in13v2(Observer):
     def form_image(self, prices, screen_draw):
         screen_draw.rectangle((0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), fill="#ffffff")
         screen_draw = self.screen_draw
+
         if self.mode == "candle":
             array_length = len(prices)
             last_element = prices[array_length - 1]
@@ -70,6 +72,9 @@ class Epd2in13v2(Observer):
         #Plot.caption(flatten_prices[len(flatten_prices) - 1], 95, SCREEN_WIDTH, FONT_LARGE, screen_draw)
 
     def update(self, data):
+        print("funkcja update ... ")
+        #self.screen_image = self._init_display(self.epd)
+        #time.sleep(10)
         self.form_image(data, self.screen_draw)
         screen_image_rotated = self.screen_image.rotate(0)
         # TODO: add a way to switch bewen partial and full update
